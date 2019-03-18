@@ -147,6 +147,7 @@ function InstallPackages([string]$updates_dir) {
 	Write-Host "Copying Filtered Updates"
 	foreach ($package in $packages) {
 		#Copy-File $package "$packageFilteredDir\"
+		Write-Host "Processing: $Package"
 		Invoke-Expression "& '$dism' /image:$mount_dir /Add-Package /PackagePath:$package"
 	}
 	
@@ -164,6 +165,7 @@ function InstallPackages([string]$updates_dir) {
 
 function SafeUnmountWim ([string]$mount_dir) {
 	# Commit only on successful update
+	$lastexitcode = 0
 	if ($lastexitcode -ne 0)
 	{
 		Write-Host "Errors found, NOT committing any changes"

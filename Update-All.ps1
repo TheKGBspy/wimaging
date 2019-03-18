@@ -8,10 +8,11 @@
 
 if ($os -like "windows-pe-*")
 {
+	Write-Host "Working on PE"
 	# If working on 1-imaged boot.wim (winpe)	
 	MountWim $wim_file $mount_dir $wim_image_name
 	AddDrivers $drivers_dir $mount_dir	
-	AddUpdates $update_dir $mount_dir	
+	AddUpdates $updates_dir $mount_dir	
 	AddTools $tools_dir $mount_dir	
 	SafeUnmountWim $mount_dir
 }

@@ -21,7 +21,9 @@ if ($boot) {
 }
 
 if ($windows_adk_path -eq $null) {
-	if ($os -eq "server-2012r2" -or $os -eq "win7x64") {
+	if ($os -eq "win10x64pro-FR") {
+		$windows_adk_path="c:\Program Files (x86)\Windows Kits\10\Assessment and Deployment Kit"
+	} elseif ($os -eq "server-2012r2" -or $os -eq "win7x64") {
 		$windows_adk_path="c:\Program Files (x86)\Windows Kits\8.1\Assessment and Deployment Kit"
 	} else {
 		$windows_adk_path="c:\Program Files (x86)\Windows Kits\8.0\Assessment and Deployment Kit"
@@ -46,7 +48,7 @@ if ($langpacks_dir -eq $null) {
 }
 
 if ($dism -eq $null) {
-	if ($os -eq "server-2012r2" -or $os -eq "win7x64") {
+	if ($os -eq "server-2012r2" -or $os -eq "win7x64" -or $os -eq "win10x64pro-FR") {
 		$dism = "${windows_adk_path}\Deployment Tools\${arch}\DISM\dism.exe"
 	} else {
 		$dism = 'dism.exe'
@@ -54,7 +56,7 @@ if ($dism -eq $null) {
 }
 
 if ($imagex -eq $null) {
-	if ($os -eq "server-2012r2" -or $os -eq "win7x64") {
+	if ($os -eq "server-2012r2" -or $os -eq "win7x64" -or $os -eq "win10x64pro-FR") {
 		$imagex = "${windows_adk_path}\Deployment Tools\${arch}\DISM\imagex.exe"
 	} else {
 		$imagex = 'imagex.exe'
@@ -102,6 +104,7 @@ if ($boot -ne $true) {
 		$captured_wim = "${script_path}\images\${os}\captured\${os}.${edition}.install.$(Get-Date -format yyyMMdd).wim"
 	}
 
+		#write-host "test: $os"
 
 
 	if ($os -eq "server-2008r2") {
@@ -166,6 +169,17 @@ if ($boot -ne $true) {
 			# Image name in the original install.wim
 			$wim_image_name = "Windows 8.1 Pro"
 		}
+	} elseif ($os -eq "win10x64pro-FR") {
+		#write-host "test2: $edition"
+		# Directory where the updates are located
+		$updates_dir = $wsus_offline_dir+"\w100-x64\glb"
+		if ($edition -eq "professionnel") {
+			# Index of the actual image in the original install.wim
+			$wim_index = 1
+
+			# Image name in the original install.wim
+			$wim_image_name = "Windows 10 Professionnel"
+		}
 	} elseif ($os -eq "win7x64") {
 		# Directory where the updates are located
 		$updates_dir = $wsus_offline_dir+"\w61-x64\glb"
@@ -201,9 +215,10 @@ if ($boot -ne $true) {
 		$wim_file_install = "${script_path}\install\${os}\sources\boot.wim"
 		$install = "${script_path}\install\${os}"
 	}
-
+	#write-host "${updates_dir}."
 	if ($os -like "*-pe*") {
 		$sources_wim_file = "${sources}\winpe.wim"
+		$updates_dir = "${pe_features_root}"
 	} else {
 		$sources_wim_file = "${sources}\sources\boot.wim"
 	}
